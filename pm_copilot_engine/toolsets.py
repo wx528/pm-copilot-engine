@@ -89,6 +89,15 @@ _HERMES_WEBHOOK_SAFE_TOOLS = [
 # Core toolset definitions
 # These can include individual tools or reference other toolsets
 TOOLSETS = {
+    # PM Copilot toolset — populated at runtime by downstream code
+    # (e.g. copilot/tools.py::register_all_tools).  Declared here so
+    # AIAgent(enabled_toolsets=["pm"]) resolves without KeyError.
+    "pm": {
+        "description": "Project Management tools (registered at runtime by downstream code)",
+        "tools": [],
+        "includes": [],
+    },
+
     # Basic toolsets - individual tool categories
     "web": {
         "description": "Web research and content extraction tools",
