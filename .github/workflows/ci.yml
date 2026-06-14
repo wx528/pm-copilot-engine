@@ -19,26 +19,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
+          enable-cache: true
 
-      - name: Install package and dev dependencies
-        run: pip install --pre .[dev]
+      - name: Sync dependencies
+        run: uv sync --group dev
 
       - name: Compile all Python files
-        shell: python
-        run: |
-          import compileall
-          import sys
-          ok = compileall.compile_dir(".", quiet=1, force=True)
-          sys.exit(0 if ok else 1)
+        run: uv run python -m compileall -q pm_copilot_engine tests
 
       - name: Run smoke tests
-        run: pytest tests/ -v
+        run: uv run pytest tests/ -v
 
       - name: Validate pyproject.toml
-        run: |
-          pip install tomli
-          python -c "import tomli; tomli.load(open('pyproject.toml', 'rb'))"
+        run: uv run python -c "import tomllib; tomllib.load(open('pyproject.toml', 'rb'))"

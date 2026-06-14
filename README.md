@@ -21,6 +21,16 @@ Repository: https://github.com/wx528/pm-copilot-engine
 pip install pm-copilot-engine
 ```
 
+### Development (uv)
+
+This repo uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
+```bash
+# Install uv, then:
+uv sync --group dev
+uv run pytest tests/ -v
+```
+
 ## Quick start
 
 ```python
