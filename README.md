@@ -31,6 +31,25 @@ uv sync --group dev
 uv run pytest tests/ -v
 ```
 
+### Real-model integration tests
+
+To test against a real LLM API (OpenAI, MiniMax, Moonshot, DeepSeek, or any
+OpenAI-compatible endpoint), set the following environment variables and run
+the integration tests:
+
+```bash
+export PMCE_API_KEY=sk-...
+export PMCE_BASE_URL=https://api.openai.com/v1
+export PMCE_MODEL=gpt-4o-mini
+# Optional provider hint:
+# export PMCE_PROVIDER=minimax
+
+uv run pytest tests/ -m integration -v
+```
+
+Integration tests are skipped when `PMCE_API_KEY` is not set, and they are
+excluded from the default `uv run pytest tests/` run.
+
 ## Quick start
 
 ```python

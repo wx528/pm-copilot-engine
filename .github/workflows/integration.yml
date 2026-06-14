@@ -2,6 +2,19 @@ name: Integration
 
 on:
   workflow_dispatch:
+    inputs:
+      base_url:
+        description: "OpenAI-compatible base URL"
+        required: false
+        default: "https://api.openai.com/v1"
+      model:
+        description: "Model name"
+        required: false
+        default: "gpt-4o-mini"
+      provider:
+        description: "Provider hint (optional)"
+        required: false
+        default: ""
   schedule:
     # Weekly on Monday at 06:00 UTC.
     - cron: "0 6 * * 1"
@@ -24,5 +37,8 @@ jobs:
 
       - name: Run integration tests
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PMCE_API_KEY: ${{ secrets.PMCE_API_KEY }}
+          PMCE_BASE_URL: ${{ github.event.inputs.base_url || 'https://api.openai.com/v1' }}
+          PMCE_MODEL: ${{ github.event.inputs.model || 'gpt-4o-mini' }}
+          PMCE_PROVIDER: ${{ github.event.inputs.provider || '' }}
         run: uv run pytest tests/ -m integration -v
