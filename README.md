@@ -1,5 +1,12 @@
 # pm-copilot-engine
 
+<p align="center">
+  <a href="https://pypi.org/project/pm-copilot-engine/"><img src="https://img.shields.io/pypi/v/pm-copilot-engine?style=flat&logo=pypi&logoColor=white" alt="PyPI"></a>
+  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat&logo=python&logoColor=white" alt="Python">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=flat" alt="License"></a>
+  <a href="https://github.com/wx528/pm-copilot-engine/actions/workflows/ci.yml"><img src="https://github.com/wx528/pm-copilot-engine/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
+
 AI Agent Engine for Project Management — a focused fork of [Hermes](https://github.com/NousResearch/hermes-agent) by NousResearch, packaged as a reusable Python library.
 
 Repository: https://github.com/wx528/pm-copilot-engine

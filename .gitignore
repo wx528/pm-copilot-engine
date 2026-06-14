@@ -141,3 +141,7 @@ apps/desktop/demo/
 dist/
 build/
 *.egg-info/
+
+# Local CI verification virtual environment
+.ci_verify/
+.playwright-mcp/
