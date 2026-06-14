@@ -34,21 +34,34 @@ uv run pytest tests/ -v
 ### Real-model integration tests
 
 To test against a real LLM API (OpenAI, MiniMax, Moonshot, DeepSeek, or any
-OpenAI-compatible endpoint), set the following environment variables and run
-the integration tests:
+OpenAI-compatible endpoint), copy `.env.example` to `.env` and fill in your
+credentials:
 
 ```bash
-export PMCE_API_KEY=sk-...
-export PMCE_BASE_URL=https://api.openai.com/v1
-export PMCE_MODEL=gpt-4o-mini
-# Optional provider hint:
-# export PMCE_PROVIDER=minimax
+cp .env.example .env
+# edit .env
+```
 
+Example for MiniMax M3:
+
+```bash
+PMCE_API_KEY=your-minimax-key
+PMCE_BASE_URL=https://api.minimax.chat/v1
+PMCE_MODEL=minimax-m3
+PMCE_PROVIDER=minimax
+```
+
+Then run:
+
+```bash
 uv run pytest tests/ -m integration -v
 ```
 
 Integration tests are skipped when `PMCE_API_KEY` is not set, and they are
 excluded from the default `uv run pytest tests/` run.
+
+In CI, set the secrets `PMCE_API_KEY`, `PMCE_BASE_URL`, `PMCE_MODEL`, and
+`PMCE_PROVIDER` (the last three are optional and default to OpenAI).
 
 ## Quick start
 

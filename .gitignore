@@ -145,3 +145,7 @@ build/
 # Local CI verification virtual environment
 .ci_verify/
 .playwright-mcp/
+
+# Local environment overrides for integration tests
+.env
+

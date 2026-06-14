@@ -28,8 +28,13 @@ from __future__ import annotations
 import os
 
 import pytest
+from dotenv import load_dotenv
 
 from pm_copilot_engine import AIAgent
+
+
+# Allow local `.env` to supply PMCE_* variables for integration tests.
+load_dotenv()
 
 
 pytestmark = pytest.mark.integration
