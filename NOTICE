@@ -1,0 +1,10 @@
+pm-copilot-engine is derived from Hermes by NousResearch.
+Original repository: https://github.com/NousResearch/hermes-agent
+Original license: MIT License
+Copyright (c) NousResearch
+
+Modifications:
+- Package renamed from hermes-agent to pm-copilot-engine
+- Restructured as standard Python package (pm_copilot_engine/)
+- Pruned non-core modules (gateway, TUI, web UI, CLI, etc.)
+- Tailored for Project Management Copilot use cases
