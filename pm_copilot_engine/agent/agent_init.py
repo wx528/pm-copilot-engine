@@ -65,7 +65,7 @@ def _ra():
     patches reach this code path.
     """
     import pm_copilot_engine.run_agent
-    return run_agent
+    return pm_copilot_engine.run_agent
 
 
 def _build_codex_gpt55_autoraise_notice(autoraise: Dict[str, float]) -> str:

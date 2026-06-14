@@ -121,7 +121,7 @@ def _ra():
     ``run_agent.OpenAI`` and have those patches reach this code path.
     """
     import pm_copilot_engine.run_agent
-    return run_agent
+    return pm_copilot_engine.run_agent
 
 
 def _nous_entitlement_message(capability: str) -> str:

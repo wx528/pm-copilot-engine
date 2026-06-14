@@ -55,7 +55,7 @@ _MAX_TOOL_WORKERS = 8
 def _ra():
     """Lazy reference to ``run_agent`` so patches like ``run_agent._set_interrupt`` work."""
     import pm_copilot_engine.run_agent
-    return run_agent
+    return pm_copilot_engine.run_agent
 
 
 def _emit_terminal_post_tool_call(

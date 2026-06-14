@@ -47,7 +47,7 @@ def _ra():
     that target symbols imported into ``run_agent``'s namespace.
     """
     import pm_copilot_engine.run_agent
-    return run_agent
+    return pm_copilot_engine.run_agent
 
 
 def estimate_request_context_tokens(api_payload: Any) -> int:

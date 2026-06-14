@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 def _ra():
     """Lazy ``run_agent`` reference for test-patch routing."""
     import pm_copilot_engine.run_agent
-    return run_agent
+    return pm_copilot_engine.run_agent
 
 
 AGENT_RUNTIME_POST_HOOK_TOOL_NAMES = frozenset(
