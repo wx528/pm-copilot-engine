@@ -457,9 +457,27 @@ class _ManagedRotatingFileHandler(RotatingFileHandler):
     def emit(self, record: logging.LogRecord) -> None:
         # Cheap-ish stat-per-record check; the kernel caches inode metadata
         # so the syscall is sub-microsecond on a hot file.
-        if self.stream is not None or os.path.exists(self.baseFilename):
-            self._reopen_if_externally_rotated()
-        super().emit(record)
+        try:
+            if self.stream is not None or os.path.exists(self.baseFilename):
+                self._reopen_if_externally_rotated()
+            super().emit(record)
+        except OSError:
+            # On Windows, file descriptors can become invalid (e.g. Bad file
+            # descriptor) when the log file is rotated externally or the
+            # stream is closed by another process.  Attempt to reopen and
+            # retry once; if that also fails, silently drop the record
+            # rather than crashing the caller.
+            try:
+                if self.stream is not None:
+                    self.stream.close()
+            except Exception:
+                pass
+            self.stream = None
+            try:
+                self.stream = self._open()
+                super().emit(record)
+            except Exception:
+                pass
 
     def _open(self):
         stream = super()._open()
