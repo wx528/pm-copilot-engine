@@ -5178,6 +5178,35 @@ class AIAgent:
         from pm_copilot_engine.agent.conversation_loop import run_conversation
         return run_conversation(self, user_message, system_message, conversation_history, task_id, stream_callback, persist_user_message)
 
+    async def arun_conversation(
+        self,
+        user_message: str,
+        system_message: str = None,
+        conversation_history: List[Dict[str, Any]] = None,
+        task_id: str = None,
+        stream_callback: Optional[callable] = None,
+        persist_user_message: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Async wrapper around :meth:`run_conversation`.
+
+        Runs the synchronous conversation loop in a thread-pool executor so
+        the calling asyncio event loop is **not** blocked.  The signature
+        and return value are identical to :meth:`run_conversation`.
+
+        This is the preferred entry point when calling the agent from an
+        async context (FastAPI, anyio, etc.).
+        """
+        import asyncio
+        return await asyncio.to_thread(
+            self.run_conversation,
+            user_message,
+            system_message,
+            conversation_history,
+            task_id,
+            stream_callback,
+            persist_user_message,
+        )
+
     def chat(self, message: str, stream_callback: Optional[callable] = None) -> str:
         """
         Simple chat interface that returns just the final response.
@@ -5191,6 +5220,16 @@ class AIAgent:
         """
         result = self.run_conversation(message, stream_callback=stream_callback)
         return result["final_response"]
+
+    async def achat(self, message: str, stream_callback: Optional[callable] = None) -> str:
+        """Async wrapper around :meth:`chat`.
+
+        Runs the synchronous chat in a thread-pool executor so the calling
+        asyncio event loop is **not** blocked.  The signature and return
+        value are identical to :meth:`chat`.
+        """
+        import asyncio
+        return await asyncio.to_thread(self.chat, message, stream_callback)
 
     def _run_codex_app_server_turn(
         self,
