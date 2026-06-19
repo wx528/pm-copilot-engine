@@ -148,7 +148,7 @@ def _tool_search_scoped_names(agent) -> frozenset:
     a dict lookup, not a full tool-defs rebuild on every tool call.
     """
     try:
-        import pm_copilot_engine.model_tools
+        import pm_copilot_engine.model_tools as model_tools
         from pm_copilot_engine.tools import tool_search as _ts
         from pm_copilot_engine.tools.registry import registry as _registry
     except Exception:
