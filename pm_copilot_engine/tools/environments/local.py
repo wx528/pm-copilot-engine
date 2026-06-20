@@ -198,7 +198,7 @@ def _inject_context_hermes_home(env: dict) -> None:
 
         value = get_hermes_home_override()
         if value:
-            env["HERMES_HOME"] = value
+            env["PM_COPILOT_HOME"] = value
     except Exception:
         pass
 

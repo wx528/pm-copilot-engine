@@ -53,16 +53,16 @@ def _get_platform_default_hermes_home() -> Path:
 def get_hermes_home() -> Path:
     """Return the Hermes home directory (default: platform-native path).
 
-    Reads HERMES_HOME env var, falls back to the platform-native default.
-    This is the single source of truth — all other copies should import this.
+    Reads PM_COPILOT_HOME env var first, then HERMES_HOME as fallback,
+    then the platform-native default.
 
-    When ``HERMES_HOME`` is unset but an ``active_profile`` file indicates
+    When neither env var is set but an ``active_profile`` file indicates
     a non-default profile is active, logs a loud one-shot warning to
     ``errors.log`` so cross-profile data corruption is diagnosable instead
     of silent.  Behavior is unchanged otherwise — we still return
     the platform-native default — because raising here would brick 30+ module-level
     callers that import this at load time.  Subprocess spawners are
-    expected to propagate ``HERMES_HOME`` explicitly (see the systemd
+    expected to propagate HERMES_HOME explicitly (see the systemd
     template in ``hermes_cli/gateway.py`` and the kanban dispatcher in
     ``hermes_cli/kanban_db.py``).  See https://github.com/NousResearch/hermes-agent/issues/18594.
     """
@@ -70,7 +70,9 @@ def get_hermes_home() -> Path:
     if override:
         return Path(override)
 
-    val = os.environ.get("HERMES_HOME", "").strip()
+    val = os.environ.get("PM_COPILOT_HOME", "").strip()
+    if not val:
+        val = os.environ.get("HERMES_HOME", "").strip()
     if val:
         return Path(val)
 
@@ -126,7 +128,9 @@ def get_default_hermes_root() -> Path:
     Import-safe — no dependencies beyond stdlib.
     """
     native_home = _get_platform_default_hermes_home()
-    env_home = os.environ.get("HERMES_HOME", "")
+    env_home = os.environ.get("PM_COPILOT_HOME", "")
+    if not env_home:
+        env_home = os.environ.get("HERMES_HOME", "")
     if not env_home:
         return native_home
     env_path = Path(env_home)
@@ -299,7 +303,7 @@ def get_subprocess_home() -> str | None:
     Activation is directory-based: if the ``home/`` subdirectory doesn't
     exist, returns ``None`` and behavior is unchanged.
     """
-    hermes_home = get_hermes_home_override() or os.getenv("HERMES_HOME")
+    hermes_home = get_hermes_home_override() or os.getenv("PM_COPILOT_HOME") or os.getenv("HERMES_HOME")
     if not hermes_home:
         return None
     profile_home = os.path.join(hermes_home, "home")
