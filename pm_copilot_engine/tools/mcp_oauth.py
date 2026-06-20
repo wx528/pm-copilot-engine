@@ -119,7 +119,7 @@ def _get_token_dir() -> Path:
         from pm_copilot_engine.hermes_constants import get_hermes_home
         base = Path(get_hermes_home())
     except ImportError:
-        base = Path(os.environ.get("HERMES_HOME", str(Path.home() / ".hermes")))
+        base = Path(os.environ.get("PM_COPILOT_HOME", str(Path.home() / ".hermes")))
     return base / "mcp-tokens"
 
 

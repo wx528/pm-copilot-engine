@@ -956,7 +956,7 @@ def seed_profile_skills(profile_dir: Path, quiet: bool = False) -> Optional[dict
             [sys.executable, "-c",
              "import json; from pm_copilot_engine.tools.skills_sync import sync_skills; "
              "r = sync_skills(quiet=True); print(json.dumps(r))"],
-            env={**os.environ, "HERMES_HOME": str(profile_dir)},
+            env={**os.environ, "PM_COPILOT_HOME": str(profile_dir)},
             cwd=str(project_root),
             capture_output=True, text=True, timeout=60,
         )
@@ -1270,9 +1270,9 @@ def _cleanup_gateway_service(name: str, profile_dir: Path) -> None:
 
     # Derive service name for this profile
     # Temporarily set HERMES_HOME so _profile_suffix resolves correctly
-    old_home = os.environ.get("HERMES_HOME")
+    old_home = os.environ.get("PM_COPILOT_HOME")
     try:
-        os.environ["HERMES_HOME"] = str(profile_dir)
+        os.environ["PM_COPILOT_HOME"] = str(profile_dir)
         from pm_copilot_engine._internal.hermes_cli.gateway import get_service_name, get_launchd_plist_path
 
         if _platform.system() == "Linux":
@@ -1307,9 +1307,9 @@ def _cleanup_gateway_service(name: str, profile_dir: Path) -> None:
         print(f"⚠ Service cleanup: {e}")
     finally:
         if old_home is not None:
-            os.environ["HERMES_HOME"] = old_home
-        elif "HERMES_HOME" in os.environ:
-            del os.environ["HERMES_HOME"]
+            os.environ["PM_COPILOT_HOME"] = old_home
+        elif "PM_COPILOT_HOME" in os.environ:
+            del os.environ["PM_COPILOT_HOME"]
 
 
 def _stop_gateway_process(profile_dir: Path) -> None:

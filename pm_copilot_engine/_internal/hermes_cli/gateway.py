@@ -812,13 +812,13 @@ def _sync_hermes_home_from_systemd_unit(system: bool) -> None:
     if not system:
         return
     env = _read_systemd_unit_environment(system=True)
-    unit_home = env.get("HERMES_HOME", "").strip()
+    unit_home = env.get("PM_COPILOT_HOME", "").strip()
     if not unit_home:
         return
-    current = os.environ.get("HERMES_HOME", "").strip()
+    current = os.environ.get("PM_COPILOT_HOME", "").strip()
     if current == unit_home:
         return
-    os.environ["HERMES_HOME"] = unit_home
+    os.environ["PM_COPILOT_HOME"] = unit_home
 
 
 def _read_systemd_unit_properties(

@@ -1212,7 +1212,7 @@ def _local_dashboard_request(request: Request) -> bool:
 
 
 def _default_hermes_root_is_opt_data() -> bool:
-    raw = os.environ.get("HERMES_HOME", "").strip()
+    raw = os.environ.get("PM_COPILOT_HOME", "").strip()
     if not raw:
         return False
     try:
@@ -10197,7 +10197,7 @@ def _resolve_chat_argv(
     env.setdefault("HERMES_TUI_INLINE", "1")
 
     if profile_dir is not None:
-        env["HERMES_HOME"] = str(profile_dir)
+        env["PM_COPILOT_HOME"] = str(profile_dir)
 
     if resume:
         latest_resume, _latest_path = _session_latest_descendant(resume)

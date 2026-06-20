@@ -51,28 +51,23 @@ def _get_platform_default_hermes_home() -> Path:
 
 
 def get_hermes_home() -> Path:
-    """Return the Hermes home directory (default: platform-native path).
+    """Return the data home directory (default: platform-native path).
 
-    Reads PM_COPILOT_HOME env var first, then HERMES_HOME as fallback,
-    then the platform-native default.
+    Reads PM_COPILOT_HOME env var, falls back to the platform-native default.
+    This is the single source of truth — all other copies should import this.
 
-    When neither env var is set but an ``active_profile`` file indicates
+    When PM_COPILOT_HOME is unset but an ``active_profile`` file indicates
     a non-default profile is active, logs a loud one-shot warning to
     ``errors.log`` so cross-profile data corruption is diagnosable instead
     of silent.  Behavior is unchanged otherwise — we still return
     the platform-native default — because raising here would brick 30+ module-level
-    callers that import this at load time.  Subprocess spawners are
-    expected to propagate HERMES_HOME explicitly (see the systemd
-    template in ``hermes_cli/gateway.py`` and the kanban dispatcher in
-    ``hermes_cli/kanban_db.py``).  See https://github.com/NousResearch/hermes-agent/issues/18594.
+    callers that import this at load time.
     """
     override = get_hermes_home_override()
     if override:
         return Path(override)
 
     val = os.environ.get("PM_COPILOT_HOME", "").strip()
-    if not val:
-        val = os.environ.get("HERMES_HOME", "").strip()
     if val:
         return Path(val)
 
@@ -94,12 +89,11 @@ def get_hermes_home() -> Path:
             # configured, and (b) root-logger propagation would double-emit
             # on consoles where a StreamHandler is already attached.
             msg = (
-                f"[HERMES_HOME fallback] HERMES_HOME is unset but active "
+                f"[PM_COPILOT_HOME fallback] PM_COPILOT_HOME is unset but active "
                 f"profile is {active!r}. Falling back to {fallback_home}, which "
                 f"is the DEFAULT profile — not {active!r}. Any data this "
                 f"process writes will land in the wrong profile. The "
-                f"subprocess spawner should pass HERMES_HOME explicitly "
-                f"(see issue #18594)."
+                f"subprocess spawner should pass PM_COPILOT_HOME explicitly."
             )
             try:
                 sys.stderr.write(msg + "\n")
@@ -111,32 +105,24 @@ def get_hermes_home() -> Path:
 
 
 def get_default_hermes_root() -> Path:
-    """Return the root Hermes directory for profile-level operations.
+    """Return the root directory for profile-level operations.
 
-    In standard deployments this is the platform-native Hermes home
+    In standard deployments this is the platform-native home
     (``~/.hermes`` on POSIX, ``%LOCALAPPDATA%\\hermes`` on native Windows).
 
-    In Docker or custom deployments where ``HERMES_HOME`` points outside
-    ``~/.hermes`` (e.g. ``/opt/data``), returns ``HERMES_HOME`` directly
+    In Docker or custom deployments where ``PM_COPILOT_HOME`` points outside
+    ``~/.hermes`` (e.g. ``/opt/data``), returns ``PM_COPILOT_HOME`` directly
     — that IS the root.
-
-    In profile mode where ``HERMES_HOME`` is ``<root>/profiles/<name>``,
-    returns ``<root>`` so that ``profile list`` can see all profiles.
-    Works both for standard (``~/.hermes/profiles/coder``) and Docker
-    (``/opt/data/profiles/coder``) layouts.
 
     Import-safe — no dependencies beyond stdlib.
     """
     native_home = _get_platform_default_hermes_home()
     env_home = os.environ.get("PM_COPILOT_HOME", "")
     if not env_home:
-        env_home = os.environ.get("HERMES_HOME", "")
-    if not env_home:
         return native_home
     env_path = Path(env_home)
     try:
         env_path.resolve().relative_to(native_home.resolve())
-        # HERMES_HOME is under ~/.hermes (normal or profile mode)
         return native_home
     except ValueError:
         pass
@@ -148,7 +134,6 @@ def get_default_hermes_root() -> Path:
     if env_path.parent.name == "profiles":
         return env_path.parent.parent
 
-    # Not a profile path — HERMES_HOME itself is the root
     return env_path
 
 
@@ -303,7 +288,7 @@ def get_subprocess_home() -> str | None:
     Activation is directory-based: if the ``home/`` subdirectory doesn't
     exist, returns ``None`` and behavior is unchanged.
     """
-    hermes_home = get_hermes_home_override() or os.getenv("PM_COPILOT_HOME") or os.getenv("HERMES_HOME")
+    hermes_home = get_hermes_home_override() or os.getenv("PM_COPILOT_HOME")
     if not hermes_home:
         return None
     profile_home = os.path.join(hermes_home, "home")
@@ -399,7 +384,7 @@ def is_container() -> bool:
 
 
 def get_config_path() -> Path:
-    """Return the path to ``config.yaml`` under HERMES_HOME.
+    """Return the path to ``config.yaml`` under PM_COPILOT_HOME.
 
     Replaces the ``get_hermes_home() / "config.yaml"`` pattern repeated
     in 7+ files (skill_utils.py, hermes_logging.py, hermes_time.py, etc.).
@@ -408,13 +393,13 @@ def get_config_path() -> Path:
 
 
 def get_skills_dir() -> Path:
-    """Return the path to the skills directory under HERMES_HOME."""
+    """Return the path to the skills directory under PM_COPILOT_HOME."""
     return get_hermes_home() / "skills"
 
 
 
 def get_env_path() -> Path:
-    """Return the path to the ``.env`` file under HERMES_HOME."""
+    """Return the path to the ``.env`` file under PM_COPILOT_HOME."""
     return get_hermes_home() / ".env"
 
 
